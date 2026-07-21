@@ -190,6 +190,13 @@
   .legend .post::before { background: var(--ok); }
   .legend .brk::before { background: var(--bad); }
 
+  .credit {
+    padding: 16px 20px 28px; border-top: 1px solid var(--line); background: var(--panel);
+    color: var(--muted); font-size: 12px; line-height: 1.6; text-align: center;
+  }
+  .credit a { color: var(--accent); text-decoration: none; }
+  .credit a:hover { text-decoration: underline; }
+
   /* ===== Clone flutuante do polyfill de arrastar por toque ===== */
   .touch-ghost {
     position: fixed; z-index: 999; pointer-events: none; opacity: 0.9;
@@ -316,6 +323,11 @@
   <span class="brk">pré-req insatisfeito (vermelho)</span>
   <span>pill <span class="pill alt">alt</span> = grupo de alternativas · <span class="pill el">el</span> = eletiva · <span class="pill minc">≥X</span> = exige X créditos cursados (vermelho se ainda não atinge)</span>
 </div>
+
+<footer class="credit">
+  <div>Desenvolvedor: André Fagundes Moreno</div>
+  <div>Contato e chave pix: <a href="mailto:fagundesmoreno@icloud.com">fagundesmoreno@icloud.com</a> · <a href="https://linktr.ee/fagundesmoreno" target="_blank" rel="noopener">linktr.ee/fagundesmoreno</a></div>
+</footer>
 
 <script id="h2c-lib">/*!
  * html2canvas 1.4.1 <https://html2canvas.hertzen.com>
