@@ -161,15 +161,17 @@
   .dot.t-extras        { background: #6a7080; }
   .dot.alt8            { background: var(--warn); }
   /* Track color bars */
-  .card.t-gerenciamento { border-left: 3px solid #7aa2ff; }
-  .card.t-admpublica    { border-left: 3px solid #ef8f6e; }
-  .card.t-rh            { border-left: 3px solid #e6c84f; }
-  .card.t-financas      { border-left: 3px solid #7ddf8a; }
-  .card.t-direito       { border-left: 3px solid #ffb454; }
-  .card.t-marketing     { border-left: 3px solid #ff8ab0; }
-  .card.t-estatistica   { border-left: 3px solid #b89cff; }
-  .card.t-logistica     { border-left: 3px solid #4dd4cd; }
-  .card.t-extras        { border-left: 3px solid #6a7080; }
+  .card { border-left: 3px solid var(--tc, var(--line)); }
+  .card.t-gerenciamento { --tc: #7aa2ff; }
+  .card.t-admpublica    { --tc: #ef8f6e; }
+  .card.t-rh            { --tc: #e6c84f; }
+  .card.t-financas      { --tc: #7ddf8a; }
+  .card.t-direito       { --tc: #ffb454; }
+  .card.t-marketing     { --tc: #ff8ab0; }
+  .card.t-estatistica   { --tc: #b89cff; }
+  .card.t-logistica     { --tc: #4dd4cd; }
+  .card.t-extras        { --tc: #6a7080; }
+  .ead-tag { font-size: 9px; color: var(--accent); font-weight: 600; margin-top: 2px; }
   .subcat-h {
     grid-column: 1 / -1;
     font-size: 10px; color: var(--muted); letter-spacing: 0.06em;
@@ -194,6 +196,54 @@
     box-shadow: 0 8px 24px rgba(0,0,0,0.5); transform: translate(-50%, -50%);
   }
   body.touch-dragging { touch-action: none; overflow: hidden; }
+
+  /* ===== Celular: lista vertical por semestre (cor no topo, código minúsculo embaixo) ===== */
+  .board.list-mode { display: block; padding: 8px; }
+  .sem-section { margin-bottom: 10px; }
+  .sem-section-h {
+    font-size: 12px; font-weight: 700; color: var(--txt); letter-spacing: 0.03em;
+    padding: 6px 4px; border-bottom: 1px solid var(--line); margin-bottom: 6px;
+  }
+  .sem-section-h .cred { color: var(--accent); font-weight: 600; }
+  .sem-section-body { display: flex; flex-direction: column; gap: 6px; min-height: 40px; }
+  .list-mode .card {
+    display: flex; flex-direction: column; padding: 7px 9px;
+    border-left-width: 1px; border-top: 4px solid var(--tc);
+  }
+  .list-mode .card .name { order: 1; font-size: 13px; font-weight: 500; margin-top: 0; }
+  .list-mode .card .ead-tag { order: 2; }
+  .list-mode .card .code {
+    order: 3; margin-top: 3px; color: var(--muted);
+    font-size: clamp(8px, 2.6vw, 10px);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .list-mode .card .sem-badge { display: none; }
+
+  /* ===== Resumo enxuto para exportar (off-screen; capturado por html2canvas) ===== */
+  .export-view {
+    position: fixed; left: -10000px; top: 0; width: 900px; box-sizing: border-box;
+    padding: 28px 32px; font: 15px/1.4 -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  }
+  .export-view.dark  { background: #0f1115; color: #e6e8ee; }
+  .export-view.light { background: #ffffff; color: #1a1d24; }
+  .export-view .ev-title { font-size: 22px; font-weight: 700; }
+  .export-view .ev-sub { font-size: 14px; opacity: 0.7; margin-top: 4px; }
+  .export-view .ev-sem {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 16px; font-weight: 700; margin: 18px 0 6px; padding-bottom: 4px; border-bottom: 2px solid;
+  }
+  .export-view.dark  .ev-sem { border-color: #2a2f3d; }
+  .export-view.light .ev-sem { border-color: #dcdfe6; }
+  .export-view .ev-cred { font-size: 13px; font-weight: 600; opacity: 0.7; }
+  .export-view .ev-row { display: flex; align-items: center; gap: 10px; padding: 5px 2px; border-bottom: 1px solid; }
+  .export-view.dark  .ev-row { border-color: #1f2330; }
+  .export-view.light .ev-row { border-color: #eef0f3; }
+  .export-view .ev-dot { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+  .export-view .ev-name { flex: 1; font-weight: 500; }
+  .export-view .ev-ead { font-size: 11px; font-weight: 600; color: #4f86ff; margin-left: 8px; }
+  .export-view .ev-frente { font-size: 12px; opacity: 0.6; width: 150px; text-align: right; }
+  .export-view .ev-code { font-size: 11px; opacity: 0.5; width: 74px; text-align: right; }
+  .export-view .ev-cr { font-size: 12px; opacity: 0.7; width: 36px; text-align: right; }
 
   /* ===== Tablet / notebook menor ===== */
   @media (max-width: 1100px) {
@@ -242,9 +292,8 @@
     <div class="menu-wrap">
       <button id="save-btn">Salvar plano ▾</button>
       <div class="menu" id="save-menu" hidden>
-        <button data-fmt="pdf">PDF</button>
-        <button data-fmt="png">PNG</button>
-        <button data-fmt="jpeg">JPEG</button>
+        <button data-theme="dark">Modo escuro</button>
+        <button data-theme="light">Modo claro</button>
       </div>
     </div>
     <button id="reset">Resetar</button>
@@ -347,7 +396,6 @@ const TRACKS = [
   { id: "marketing",    name: "Marketing" },
   { id: "financas",     name: "Finanças" },
   { id: "logistica",    name: "Produção" },
-  { id: "direito",      name: "Direito" },
   { id: "estatistica",  name: "Matemática" },
   { id: "admpublica",   name: "APS e outros" },
 ];
@@ -520,10 +568,13 @@ const COURSES = [
 // - Coluna "APS e outros" (admpublica) recebe: obrigatórias avulsas + Adm. Pública
 //   (pasta "Adm. Pública") + eletivas de Direito/Extras (pasta "cpes").
 // - Coluna "Direito" (direito) fica só com as obrigatórias de Direito.
+// Matérias com opção EAD (presenciais com alternativa EAD de outro código, ou já EAD) — do PDF oficial
+const EAD_OPTION = new Set(["ECO02254", "MAT01109", "ECO02273", "MAT02215", "MAT01031", "ADM01062"]);
 const TO_RH = new Set(["ADM01104", "ADM01110", "ADM01009", "ADM01144", "ADM01156"]);
 const TO_MAT = new Set(["MAT01031"]);          // Matemática Financeira → Matemática
 const TO_PROD = new Set(["ADM01160"]);         // Sistemas de Informações → Produção
-const APS_OBRIG = new Set(["LET01405", "ADM01188", "ADM01194", "TCC"]); // avulsas → APS e outros
+// avulsas + obrigatórias de Direito → coluna APS e outros (Oficina II volta pra Administração)
+const APS_OBRIG = new Set(["LET01405", "ADM01194", "TCC", "DIR03302", "DIR04416", "DIR02203", "DIR04401"]);
 // Eletivas de tema público/social espalhadas em outras subcategorias → pasta "Adm. Pública".
 // (setor público, governamental, org. públicas e sociais, RH no setor público, etc.)
 const PUB_SOCIAL = new Set([
@@ -648,10 +699,13 @@ function makeCard(c) {
   const prereqTitle = c.prereqs.length ? c.prereqs.join(", ") : "";
   const cumBefore = c.sem > 0 ? cumCredBefore(c.sem) : 0;
   const minCredOk = !c.minCred || cumBefore >= c.minCred;
+  const ead = EAD_OPTION.has(c.code);
+  const dispName = c.name.replace(/\s*—\s*EAD\s*$/, "");
   card.innerHTML = `
     ${ORIG_SEM[c.code] > 0 ? `<div class="sem-badge">S${ORIG_SEM[c.code]}</div>` : ''}
     <div class="code">${c.code}</div>
-    <div class="name">${c.name}</div>
+    <div class="name">${dispName}</div>
+    ${ead ? '<div class="ead-tag">opção EAD</div>' : ''}
     <div class="meta-row">
       <span class="pill">${c.cred} cr</span>
       ${c.elet ? '<span class="pill el">el</span>' : ''}
@@ -723,32 +777,58 @@ function render() {
   const maxUsed = Math.max(...state.filter(c => c.sem > 0).map(c => c.sem), 10);
   const rowCount = Math.max(TOTAL_SEMESTERS, maxUsed + 1);
 
-  const corner = document.createElement("div");
-  corner.className = "track-h";
-  board.appendChild(corner);
-  for (const t of TRACKS) {
-    const h = document.createElement("div");
-    h.className = "track-h";
-    const cred = state.filter(c => c.track === t.id && c.sem > 0).reduce((a,b) => a + b.cred, 0);
-    h.innerHTML = `${t.name}<span class="cred">${cred}cr</span>`;
-    board.appendChild(h);
-  }
+  const mobile = window.matchMedia("(max-width: 640px)").matches;
+  board.classList.toggle("list-mode", mobile);
+  const trackIdx = Object.fromEntries(TRACKS.map((t, i) => [t.id, i]));
 
-  for (let s = 1; s <= rowCount; s++) {
-    const semCred = state.filter(c => c.sem === s).reduce((a,b) => a + b.cred, 0);
-    const semH = document.createElement("div");
-    semH.className = "sem-h";
-    semH.innerHTML = `S${s}<span class="cred">${semCred}cr</span>`;
-    board.appendChild(semH);
+  if (mobile) {
+    // Celular: lista vertical por semestre (sem colunas de frente)
+    for (let s = 1; s <= rowCount; s++) {
+      const courses = state.filter(c => c.sem === s)
+        .sort((a, b) => (trackIdx[a.track] - trackIdx[b.track]) || a.name.localeCompare(b.name));
+      const semCred = courses.reduce((a, b) => a + b.cred, 0);
+      const section = document.createElement("div");
+      section.className = "sem-section";
+      const h = document.createElement("div");
+      h.className = "sem-section-h";
+      h.innerHTML = `S${s} · <span class="cred">${semCred}cr</span>`;
+      const body = document.createElement("div");
+      body.className = "cell sem-section-body";
+      body.dataset.sem = s;
+      for (const c of courses) body.appendChild(makeCard(c));
+      attachDrop(body, s);
+      section.appendChild(h);
+      section.appendChild(body);
+      board.appendChild(section);
+    }
+  } else {
+    // Desktop: matriz semestre × frente
+    const corner = document.createElement("div");
+    corner.className = "track-h";
+    board.appendChild(corner);
     for (const t of TRACKS) {
-      const cell = document.createElement("div");
-      cell.className = "cell";
-      cell.dataset.sem = s;
-      cell.dataset.track = t.id;
-      const courses = state.filter(c => c.sem === s && c.track === t.id);
-      for (const c of courses) cell.appendChild(makeCard(c));
-      attachDrop(cell, s);
-      board.appendChild(cell);
+      const h = document.createElement("div");
+      h.className = "track-h";
+      const cred = state.filter(c => c.track === t.id && c.sem > 0).reduce((a, b) => a + b.cred, 0);
+      h.innerHTML = `${t.name}<span class="cred">${cred}cr</span>`;
+      board.appendChild(h);
+    }
+    for (let s = 1; s <= rowCount; s++) {
+      const semCred = state.filter(c => c.sem === s).reduce((a, b) => a + b.cred, 0);
+      const semH = document.createElement("div");
+      semH.className = "sem-h";
+      semH.innerHTML = `S${s}<span class="cred">${semCred}cr</span>`;
+      board.appendChild(semH);
+      for (const t of TRACKS) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.dataset.sem = s;
+        cell.dataset.track = t.id;
+        const courses = state.filter(c => c.sem === s && c.track === t.id);
+        for (const c of courses) cell.appendChild(makeCard(c));
+        attachDrop(cell, s);
+        board.appendChild(cell);
+      }
     }
   }
 
@@ -756,7 +836,7 @@ function render() {
   const pool = document.getElementById("pool");
   pool.innerHTML = "";
   const trackName = Object.fromEntries(TRACKS.map(t => [t.id, t.name]));
-  const trackIdx = Object.fromEntries(TRACKS.map((t,i) => [t.id, i]));
+  // trackIdx já declarado no topo do render()
 
   function makeFolder(key, title, dotClass, courses, labelFor) {
     if (!courses.length) return;
@@ -866,6 +946,9 @@ document.getElementById("reset").addEventListener("click", () => {
   render();
 });
 
+// Re-renderiza ao cruzar o breakpoint celular ↔ desktop (matriz ↔ lista por semestre)
+window.matchMedia("(max-width: 640px)").addEventListener("change", render);
+
 // ===== Salvar plano: export PNG / JPEG / PDF (autocontido) =====
 const saveBtn = document.getElementById("save-btn");
 const saveMenu = document.getElementById("save-menu");
@@ -884,65 +967,61 @@ function triggerDownload(blob, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-// Escritor de PDF mínimo: 1 página paisagem com um JPEG embutido, sem libs extras.
-function jpegToPdfBlob(jpegDataUrl, wpx, hpx) {
-  const jpeg = atob(jpegDataUrl.split(",")[1]);
-  // pontos PDF (72dpi). Mantém proporção da imagem, com margem.
-  const margin = 24;
-  const maxW = 842 - 2 * margin, maxH = 595 - 2 * margin; // A4 paisagem
-  const scale = Math.min(maxW / wpx, maxH / hpx);
-  const dw = wpx * scale, dh = hpx * scale;
-  const pw = 842, ph = 595;
-  const ox = (pw - dw) / 2, oy = (ph - dh) / 2;
-  const enc = (s) => { const a = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a; };
-  const parts = [];
-  const offsets = [];
-  let pos = 0;
-  const push = (str) => { const a = enc(str); parts.push(a); offsets.push(pos); pos += a.length; return offsets.length; };
-  const raw = (u8) => { parts.push(u8); pos += u8.length; };
-
-  let out = "%PDF-1.3\n";
-  parts.push(enc(out)); pos = parts[0].length;
-  const objOffsets = {};
-  function obj(n, body) { objOffsets[n] = pos; const s = n + " 0 obj\n" + body + "\nendobj\n"; raw(enc(s)); }
-  function objStream(n, dict, streamBytes) {
-    objOffsets[n] = pos;
-    raw(enc(n + " 0 obj\n" + dict + "\nstream\n"));
-    raw(streamBytes);
-    raw(enc("\nendstream\nendobj\n"));
-  }
-  obj(1, "<< /Type /Catalog /Pages 2 0 R >>");
-  obj(2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
-  obj(3, "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + pw + " " + ph + "] /Resources << /XObject << /Im0 5 0 R >> >> /Contents 4 0 R >>");
-  const content = "q " + dw.toFixed(2) + " 0 0 " + dh.toFixed(2) + " " + ox.toFixed(2) + " " + oy.toFixed(2) + " cm /Im0 Do Q";
-  obj(4, "<< /Length " + content.length + " >>\nstream\n" + content + "\nendstream");
-  objStream(5, "<< /Type /XObject /Subtype /Image /Width " + wpx + " /Height " + hpx + " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + jpeg.length + " >>", enc(jpeg));
-
-  const xrefPos = pos;
-  let xref = "xref\n0 6\n0000000000 65535 f \n";
-  for (let i = 1; i <= 5; i++) xref += String(objOffsets[i]).padStart(10, "0") + " 00000 n \n";
-  raw(enc(xref));
-  raw(enc("trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" + xrefPos + "\n%%EOF"));
-  return new Blob(parts, { type: "application/pdf" });
-}
-
-async function exportPlan(fmt) {
+async function exportPlan(theme) {
   saveMenu.hidden = true;
   if (typeof html2canvas !== "function") { alert("Biblioteca de captura não carregada."); return; }
-  const board = document.getElementById("board");
-  const canvas = await html2canvas(board, { backgroundColor: "#0f1115", scale: 2 });
-  if (fmt === "png") {
-    canvas.toBlob((b) => triggerDownload(b, "plano-adm.png"), "image/png");
-  } else if (fmt === "jpeg") {
-    canvas.toBlob((b) => triggerDownload(b, "plano-adm.jpg"), "image/jpeg", 0.95);
-  } else if (fmt === "pdf") {
-    const jpeg = canvas.toDataURL("image/jpeg", 0.92);
-    const blob = jpegToPdfBlob(jpeg, canvas.width, canvas.height);
-    triggerDownload(blob, "plano-adm.pdf");
+  const view = buildExportView(theme);
+  document.body.appendChild(view);
+  try {
+    const bg = theme === "light" ? "#ffffff" : "#0f1115";
+    const canvas = await html2canvas(view, { backgroundColor: bg, scale: 4.3 });
+    canvas.toBlob((b) => triggerDownload(b, "plano-adm-" + theme + ".png"), "image/png");
+  } finally {
+    view.remove();
   }
 }
+
+// Resumo enxuto por semestre (sem colunas, sem buracos) para exportar como imagem.
+function buildExportView(theme) {
+  const trackName = Object.fromEntries(TRACKS.map(t => [t.id, t.name]));
+  const trackIdx = Object.fromEntries(TRACKS.map((t, i) => [t.id, i]));
+  const trackColor = {
+    gerenciamento: "#7aa2ff", admpublica: "#ef8f6e", rh: "#e6c84f", financas: "#7ddf8a",
+    direito: "#ffb454", marketing: "#ff8ab0", estatistica: "#b89cff", logistica: "#4dd4cd", extras: "#6a7080",
+  };
+  const obrig = state.filter(c => !c.elet && c.sem > 0).reduce((a, b) => a + b.cred, 0);
+  const elet = state.filter(c => c.elet && c.sem > 0).reduce((a, b) => a + b.cred, 0);
+  const maxUsed = Math.max(...state.filter(c => c.sem > 0).map(c => c.sem), 0);
+
+  let html = `<div class="ev-head">
+      <div class="ev-title">Currículo Administração — UFRGS</div>
+      <div class="ev-sub">obrigatórias: ${obrig}/160 · eletivas: ${elet}/24</div>
+    </div>`;
+  for (let s = 1; s <= maxUsed; s++) {
+    const courses = state.filter(c => c.sem === s)
+      .sort((a, b) => (trackIdx[a.track] - trackIdx[b.track]) || a.name.localeCompare(b.name));
+    if (!courses.length) continue;                       // pula semestres vazios → sem buracos
+    const cred = courses.reduce((a, b) => a + b.cred, 0);
+    html += `<div class="ev-sem"><span>Semestre ${s}</span><span class="ev-cred">${cred} créditos</span></div>`;
+    for (const c of courses) {
+      const ead = EAD_OPTION.has(c.code) ? '<span class="ev-ead">opção EAD</span>' : "";
+      html += `<div class="ev-row">
+        <span class="ev-dot" style="background:${trackColor[c.track] || "#888"}"></span>
+        <span class="ev-name">${c.name.replace(/\s*—\s*EAD\s*$/, "")}${ead}</span>
+        <span class="ev-frente">${trackName[c.track] || ""}</span>
+        <span class="ev-code">${c.code}</span>
+        <span class="ev-cr">${c.cred}cr</span>
+      </div>`;
+    }
+  }
+  const view = document.createElement("div");
+  view.className = "export-view " + theme;
+  view.innerHTML = html;
+  return view;
+}
+
 saveMenu.querySelectorAll("button").forEach((b) => {
-  b.addEventListener("click", () => exportPlan(b.dataset.fmt));
+  b.addEventListener("click", () => exportPlan(b.dataset.theme));
 });
 
 // ===== Polyfill de arrastar por TOQUE (mouse continua no DnD nativo) =====
