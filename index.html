@@ -172,6 +172,15 @@
   .card.t-logistica     { --tc: #4dd4cd; }
   .card.t-extras        { --tc: #6a7080; }
   .ead-tag { font-size: 9px; color: var(--accent); font-weight: 600; margin-top: 2px; }
+  .plano-link {
+    display: inline-block; visibility: hidden;   /* reserva o espaço; não muda o tamanho do card */
+    font-size: 10px; font-weight: 600;
+    color: var(--accent); text-decoration: none; border: 1px solid var(--line);
+    border-radius: 99px; padding: 1px 7px; background: #12151c; cursor: pointer;
+  }
+  /* desktop: aparece no hover ou quando a matéria é clicada (.plano-open) */
+  .card:hover .plano-link, .card.plano-open .plano-link { visibility: visible; }
+  .plano-link:hover { border-color: var(--accent); background: #1a2233; }
   .subcat-h {
     grid-column: 1 / -1;
     font-size: 10px; color: var(--muted); letter-spacing: 0.06em;
@@ -224,6 +233,8 @@
     font-size: clamp(8px, 2.6vw, 10px);
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
+  .board.list-mode .card .meta-row { display: flex; order: 4; margin-top: 5px; }
+  .list-mode .card .plano-link { display: inline-block; font-size: 11px; padding: 2px 9px; }
   .list-mode .card .sem-badge { display: none; }
 
   /* ===== Resumo enxuto para exportar (off-screen; capturado por html2canvas) ===== */
@@ -273,7 +284,7 @@
     .card .code { font-size: 7px; }
     .card .name { font-size: 8px; line-height: 1.15; margin-top: 1px; }
     .card .sem-badge { display: none; }
-    .board .card .meta-row { display: none; }   /* esconde pills no grid; pinça revela o resto */
+    .board .card .meta-row .pill { display: none; }   /* esconde pills; mantém a meta-row pro botão Plano */
     .sem-h { font-size: 8px; padding: 3px 2px; }
     .sem-h .cred { font-size: 7px; }
     .track-h { font-size: 8px; padding: 4px 2px; letter-spacing: 0; }
@@ -582,6 +593,9 @@ const COURSES = [
 // - Coluna "Direito" (direito) fica só com as obrigatórias de Direito.
 // Matérias com opção EAD (presenciais com alternativa EAD de outro código, ou já EAD) — do PDF oficial
 const EAD_OPTION = new Set(["ECO02254", "MAT01109", "ECO02273", "MAT02215", "MAT01031", "ADM01062"]);
+// Planos de ensino (UFRGS, oferta 2026/01) — código → id da AtividadeEnsino. Fonte: PDF do currículo.
+const PLANO_BASE = "https://www1.ufrgs.br/Ensino/PlanoDeEnsino/PlanoDeEnsinoPDF/Paginas/Visao/PDFPlanoDeEnsino.php?AtividadeEnsino=";
+const PLANO = {"ADM01001":"8369_2026012", "ADM01002":"8370_2026012", "ADM01003":"8371_2026012", "ADM01005":"8373_2026012", "ADM01006":"8374_2026012", "ADM01007":"8375_2026012", "ADM01008":"4626_2026012", "ADM01009":"9851_2026012", "ADM01011":"9853_2026012", "ADM01012":"10324_2026012", "ADM01013":"10913_2026012", "ADM01014":"15304_2026012", "ADM01015":"16023_2026012", "ADM01016":"16044_2026012", "ADM01020":"18134_2026012", "ADM01021":"18135_2026012", "ADM01022":"18136_2026012", "ADM01023":"18137_2026012", "ADM01025":"20381_2026012", "ADM01026":"20382_2026012", "ADM01027":"20389_2026012", "ADM01028":"20390_2026012", "ADM01029":"20391_2026012", "ADM01030":"20392_2026012", "ADM01032":"20394_2026012", "ADM01033":"20395_2026012", "ADM01034":"20396_2026012", "ADM01037":"20400_2026012", "ADM01041":"20404_2026012", "ADM01044":"20407_2026012", "ADM01045":"29145_2026012", "ADM01046":"30726_2026012", "ADM01048":"31517_2026012", "ADM01049":"31518_2026012", "ADM01053":"31522_2026012", "ADM01054":"31523_2026012", "ADM01055":"31524_2026012", "ADM01056":"31525_2026012", "ADM01057":"31526_2026012", "ADM01059":"31529_2026012", "ADM01061":"33876_2026012", "ADM01062":"33874_2026012", "ADM01063":"33875_2026012", "ADM01064":"36192_2026012", "ADM01065":"36877_2026012", "ADM01066":"37925_2026012", "ADM01069":"41036_2026012", "ADM01084":"42728_2026012", "ADM01085":"42729_2026012", "ADM01104":"8379_2026012", "ADM01110":"8385_2026012", "ADM01113":"8388_2026012", "ADM01115":"8389_2026012", "ADM01120":"8392_2026012", "ADM01127":"8399_2026012", "ADM01131":"8403_2026012", "ADM01136":"8406_2026012", "ADM01137":"8407_2026012", "ADM01138":"8408_2026012", "ADM01139":"8409_2026012", "ADM01140":"8410_2026012", "ADM01141":"8411_2026012", "ADM01142":"8412_2026012", "ADM01143":"8413_2026012", "ADM01144":"8414_2026012", "ADM01149":"8419_2026012", "ADM01150":"8420_2026012", "ADM01151":"8421_2026012", "ADM01152":"8422_2026012", "ADM01153":"8423_2026012", "ADM01155":"8425_2026012", "ADM01156":"8426_2026012", "ADM01160":"8428_2026012", "ADM01163":"8431_2026012", "ADM01164":"8432_2026012", "ADM01165":"8433_2026012", "ADM01166":"8434_2026012", "ADM01167":"8435_2026012", "ADM01168":"8436_2026012", "ADM01169":"8437_2026012", "ADM01170":"8438_2026012", "ADM01171":"8439_2026012", "ADM01172":"8440_2026012", "ADM01175":"8443_2026012", "ADM01176":"8444_2026012", "ADM01177":"8445_2026012", "ADM01178":"8446_2026012", "ADM01179":"8447_2026012", "ADM01180":"8448_2026012", "ADM01181":"8449_2026012", "ADM01183":"8450_2026012", "ADM01184":"8451_2026012", "ADM01185":"8452_2026012", "ADM01187":"8454_2026012", "ADM01188":"8455_2026012", "ADM01194":"8461_2026012", "ADM01200":"28845_2026012", "ADM01201":"28847_2026012", "ADM01202":"28848_2026012", "ADM01402":"44173_2026012", "DIR02203":"2251_2026012", "DIR03302":"2361_2026012", "DIR04401":"2381_2026012", "DIR04416":"2387_2026012", "ECO02120":"37822_2026012", "ECO02124":"40916_2026012", "ECO02207":"2407_2026012", "ECO02208":"2408_2026012", "ECO02252":"2433_2026012", "ECO02253":"2434_2026012", "ECO02254":"2435_2026012", "ECO02273":"2445_2026012", "ECO03005":"9861_2026012", "ECO03009":"9866_2026012", "ECO03033":"16956_2026012", "ECO03037":"20326_2026012", "ECO03320":"2603_2026012", "EDU02076":"17923_2026012", "EDU03071":"16861_2026012", "HUM04004":"8109_2026012", "HUM04064":"20274_2026012", "HUM06409":"3447_2026012", "HUM06828":"3569_2026012", "HUM06829":"3570_2026012", "HUM06834":"3575_2026012", "INF01040":"9081_2026012", "LET01405":"3972_2026012", "MAT01031":"8366_2026012", "MAT01109":"4176_2026012", "MAT01110":"4177_2026012", "MAT01218":"40858_2026012", "MAT02051":"40859_2026012", "MAT02207":"4209_2026012", "MAT02208":"4210_2026012", "MAT02214":"4213_2026012", "MAT02215":"4214_2026012", "MED05011":"9875_2026012"};
 const TO_RH = new Set(["ADM01104", "ADM01110", "ADM01009", "ADM01144", "ADM01156"]);
 const TO_MAT = new Set(["MAT01031"]);          // Matemática Financeira → Matemática
 const TO_PROD = new Set(["ADM01160"]);         // Sistemas de Informações → Produção
@@ -660,6 +674,37 @@ function ancestorsOf(code) {
   const c = state.find(x => x.code === code);
   return c ? c.prereqs : [];
 }
+// Todos os pré-requisitos transitivos (cadeia inteira de dependências anteriores)
+function allPrereqsOf(code) {
+  const seen = new Set();
+  (function up(cd) {
+    for (const p of ancestorsOf(cd)) if (!seen.has(p)) { seen.add(p); up(p); }
+  })(code);
+  return seen;
+}
+// Reordena uma pasta agrupando cadeias de dependência: pré-requisito imediato (dentro da
+// própria pasta) vem logo antes das suas dependentes. Mantém a ordem-base para as raízes.
+function chainGroup(list) {
+  const inFolder = new Set(list.map(c => c.code));
+  const byCode = Object.fromEntries(list.map(c => [c.code, c]));
+  const pos = Object.fromEntries(list.map((c, i) => [c.code, i]));
+  const children = {}, hasParent = {};
+  for (const c of list) {
+    for (const p of c.prereqs) if (inFolder.has(p)) {
+      (children[p] = children[p] || []).push(c.code);
+      hasParent[c.code] = true;
+    }
+  }
+  const visited = new Set(), out = [];
+  function emit(code) {
+    if (visited.has(code)) return;
+    visited.add(code); out.push(byCode[code]);
+    (children[code] || []).slice().sort((a, b) => pos[a] - pos[b]).forEach(emit);
+  }
+  for (const c of list) if (!hasParent[c.code]) emit(c.code);  // raízes na ordem-base
+  for (const c of list) if (!visited.has(c.code)) out.push(c); // segurança
+  return out;
+}
 // Soma de créditos cursados em semestres 1..sem-1 (apenas matérias no grid)
 function cumCredBefore(sem) {
   return state.filter(c => c.sem > 0 && c.sem < sem).reduce((a,b) => a + b.cred, 0);
@@ -708,7 +753,8 @@ function makeCard(c) {
   card.className = "card t-" + c.track + (c.elet ? " elet" : "");
   card.draggable = true;
   card.dataset.code = c.code;
-  const prereqTitle = c.prereqs.length ? c.prereqs.join(", ") : "";
+  const preAll = allPrereqsOf(c.code);
+  const prereqTitle = preAll.size ? [...preAll].join(", ") : "";
   const cumBefore = c.sem > 0 ? cumCredBefore(c.sem) : 0;
   const minCredOk = !c.minCred || cumBefore >= c.minCred;
   const ead = EAD_OPTION.has(c.code);
@@ -722,8 +768,9 @@ function makeCard(c) {
       <span class="pill">${c.cred} cr</span>
       ${c.elet ? '<span class="pill el">el</span>' : ''}
       ${c.alt ? '<span class="pill alt">alt</span>' : ''}
-      ${c.prereqs.length ? `<span class="pill" title="${prereqTitle}">pré: ${c.prereqs.length}</span>` : ''}
+      ${preAll.size ? `<span class="pill" title="${prereqTitle}">pré: ${preAll.size}</span>` : ''}
       ${c.minCred ? `<span class="pill minc ${c.sem > 0 && minCredOk ? 'ok' : ''}" title="${c.sem > 0 ? `Cumulativo antes de S${c.sem}: ${cumBefore} cr` : `Exige ${c.minCred} créditos cursados`}">≥${c.minCred}</span>` : ''}
+      ${PLANO[c.code] ? `<a class="plano-link" href="${PLANO_BASE + PLANO[c.code]}" target="_blank" rel="noopener" draggable="false">Plano ↗</a>` : ''}
     </div>
   `;
   // mark broken prereq
@@ -892,7 +939,11 @@ function render() {
     const sub = SUBCAT[c.code] || "Outros";
     return { text: sub, alt8: sub === "Alt. Etapa 8" };
   };
-  for (const key of POOL_ORDER) {
+  // Ordem: Alternativas Etapa 8 sempre 1ª; demais por nº de cadeiras (desc), desempate por POOL_ORDER.
+  const orderedKeys = [ALT8_KEY, ...Object.keys(buckets)
+    .filter(k => k !== ALT8_KEY)
+    .sort((a, b) => (buckets[b].length - buckets[a].length) || (POOL_ORDER.indexOf(a) - POOL_ORDER.indexOf(b)))];
+  for (const key of orderedKeys) {
     const courses = buckets[key];
     if (!courses || !courses.length) continue;
     courses.sort((a,b) => {
@@ -901,8 +952,9 @@ function render() {
       const ia = SUBCAT_ORDER.indexOf(sa), ib = SUBCAT_ORDER.indexOf(sb);
       return ((ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib)) || a.name.localeCompare(b.name);
     });
+    const ordered = key === ALT8_KEY ? courses : chainGroup(courses);  // agrupa cadeias de dependência
     const meta = POOL_META[key];
-    makeFolder(key, meta.title, meta.dot, courses, labelFor);
+    makeFolder(key, meta.title, meta.dot, ordered, labelFor);
   }
 
   // pool inteiro é alvo de drop (qualquer frente); devolver abre a pasta de destino
@@ -930,6 +982,11 @@ function bindCards() {
       card.classList.add("dragging");
     });
     card.addEventListener("dragend", () => card.classList.remove("dragging"));
+    // clicar na matéria revela/oculta o botão "Plano" (além do hover no desktop)
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".plano-link")) return;     // clique no próprio link só abre
+      card.classList.toggle("plano-open");
+    });
     card.addEventListener("mouseenter", () => {
       const code = card.dataset.code;
       const pre = new Set(), post = new Set();
@@ -1087,6 +1144,7 @@ function moveGhost(x, y) {
 
 document.addEventListener("pointerdown", (e) => {
   if (e.pointerType !== "touch") return;              // mouse usa DnD nativo
+  if (e.target.closest(".plano-link")) return;        // tocar em "Plano" abre o link, não arrasta
   const card = e.target.closest(".card");
   if (!card) return;
   const code = card.dataset.code;
@@ -1136,5 +1194,8 @@ document.addEventListener("pointercancel", endTouchDrag);
 
 render();
 </script>
+<!-- GoatCounter — contador de visualizações (oculto) -->
+<script data-goatcounter="https://fagundesmoreno.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
